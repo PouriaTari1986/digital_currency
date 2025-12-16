@@ -51,8 +51,12 @@ dependencies:
   blobs: ^2.0.0
   cupertino_stepper: ^0.2.1
   awesome_dialog: ^3.3.0
-  intl: ^0.20.2
+  intl: any
   shared_preferences: ^2.5.4
+  localization: ^2.1.1
+  easy_localization: ^3.0.8
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
@@ -70,7 +74,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  generate: true
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -93,10 +97,10 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   # fonts:
-  #   - family: Schyler
+  #   - family: Schuyler
   #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
+  #       - asset: fonts/Schuyler-Regular.ttf
+  #       - asset: fonts/Schuyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
   #     fonts:

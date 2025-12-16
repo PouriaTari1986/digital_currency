@@ -1,12 +1,14 @@
+
+
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class MarketViewPage extends StatelessWidget {
+  const MarketViewPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
-      body: Center(child: Text("HomePage"),),
+      body: Center(child: Text("MarketViewPage"),),
     ));
   }
 }
