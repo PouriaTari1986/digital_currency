@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:training_a/providers/crypto_data_provider.dart';
 import 'package:training_a/providers/theme_provider.dart';
 import 'package:training_a/ui/ui_helper/main_wrapper.dart';
 import 'components/const/app_theme.dart';
@@ -16,7 +17,8 @@ void main() {
   ]);
   runApp(
     MultiProvider(providers: [
-      ChangeNotifierProvider(create: (context) => ThemeProvider())
+      ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ChangeNotifierProvider(create: (context) =>CryptoDataProvider()),
 
     ],
       child: MyApp(),
