@@ -8,8 +8,8 @@ import 'package:training_a/models/crypto_model/crypto_data.dart';
 import 'package:training_a/network/response_model.dart';
 import 'package:training_a/providers/crypto_data_provider.dart';
 import 'package:training_a/ui/ui_helper/home_page_view.dart';
+import 'package:training_a/ui/ui_helper/shimmer_widget.dart';
 import 'package:training_a/ui/ui_helper/theme_switcher.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -39,13 +39,14 @@ class _HomePageState extends State<HomePage> {
       listen: false,
     );
     cryptoProvider.getTopMarketCapData();
+
   }
 
   @override
   Widget build(BuildContext context) {
     var primaryColor = Theme.of(context).primaryColor;
     TextTheme textTheme = Theme.of(context).textTheme;
-
+    final cryptoProvider = Provider.of<CryptoDataProvider>(context);
     var height = MediaQuery.of(context).size.height;
 
     return SafeArea(
@@ -164,6 +165,22 @@ class _HomePageState extends State<HomePage> {
                                 defaultPageIndex = value
                                     ? index
                                     : defaultPageIndex;
+                                switch(index){
+                                  case 0:
+                                    cryptoProvider.getTopMarketCapData();
+                                    break;
+                                    case 1:
+                                    cryptoProvider.getTopGainersData();
+                                    break;
+                                    case 2:
+                                    cryptoProvider.getTopLooserData();
+                                    break;
+                                    default:
+                                    cryptoProvider.getTopMarketCapData();
+                                    break;
+
+                                }
+
                               }),
                             },
 
@@ -179,201 +196,102 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(height: 10),
                 SizedBox(
-                  height: 500,
+                  height: height/2.5,
+                  width: double.infinity,
                   child: Consumer<CryptoDataProvider>(
                     builder: (context, cryptoDataProvider, child) {
-                      switch (context.watch<CryptoDataProvider>().state.status) {
-                        case Status.LOADING:
-                          return SizedBox(
-                            height: 80,
-                            child: Shimmer.fromColors(
-                                baseColor: Colors.grey.shade400,
-                                highlightColor: Colors.white,
-                                 child: ListView.builder(
-                                     itemCount: 10,
-                                     itemBuilder: (context, index) {
-                                       return Row(
-
-                                         children: [
-                                           Padding(
-                                             padding: const EdgeInsets.only(top: 8,bottom: 8,left: 8),
-                                             child: CircleAvatar(
-                                               backgroundColor: Colors.white,
-                                               radius: 30,
-                                               child: Icon(Icons.add),
-                                             ),
-                                           ),
-                                           Flexible(
-                                               fit: FlexFit.tight,
-                                               child: Padding(
-                                                 padding: const EdgeInsets.only(right: 8,left: 8),
-                                                 child: Column(
-                                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                                   children: [
-                                                     SizedBox(
-                                                       width: 50,
-                                                       height: 15,
-                                                       child: Container(
-                                                         decoration: BoxDecoration(
-                                                           borderRadius: BorderRadius.circular(10),
-                                                           color: Colors.white
-                                                         ),
-                                                       ),
-                                                     ),
-                                                     Padding(
-                                                       padding: const EdgeInsets.only(top: 8),
-                                                       child: SizedBox(
-                                                         width: 25,
-                                                         height: 15,
-                                                         child: Container(
-                                                           decoration: BoxDecoration(
-                                                             borderRadius: BorderRadius.circular(10),
-                                                             color: Colors.white
-                                                           ),
-                                                         ),
-                                                       ),
-                                                     ),
-                                                   ],
-                                                 ),
-                                               )),
-                                           Flexible(
-                                               fit: FlexFit.tight,
-                                               child: SizedBox(
-                                                 width: 70,
-                                                 height: 40,
-                                                 child: Container(
-                                                   decoration: BoxDecoration(
-                                                     borderRadius: BorderRadius.circular(10),
-                                                     color: Colors.white
-                                                   ),
-                                                 ),
-                                               )),
-                                           Flexible(
-                                             fit: FlexFit.tight,
-                                               child: Padding(
-                                                 padding: const EdgeInsets.only(right: 8,),
-                                                 child: Column(
-                                                   crossAxisAlignment: CrossAxisAlignment.end,
-                                                   children: [
-                                                     SizedBox(
-                                                       width: 50,
-                                                       height: 15,
-                                                       child: Container(
-                                                         decoration: BoxDecoration(
-                                                           borderRadius: BorderRadius.circular(10),
-                                                           color: Colors.white
-                                                         ),
-                                                       ),
-                                                     ),
-                                                     Padding(
-                                                       padding: const EdgeInsets.only(top: 8),
-                                                       child: SizedBox(
-                                                         width: 25,
-                                                         height: 15,
-                                                         child: Container(
-                                                           decoration: BoxDecoration(
-                                                             borderRadius: BorderRadius.circular(10),
-                                                             color: Colors.white
-                                                           ),
-                                                         ),
-                                                       ),
-                                                     ),
-                                                   ],
-                                                 ),
-                                               ))
-                                         ],
-                                       );
-                                     },),
-                            ),
-                          );
-                        case Status.COMPLETE:
-                          List<CryptoData>? model = cryptoDataProvider.dataFuture.data!.cryptoCurrencyList;
+                      if (cryptoDataProvider.state.status case Status.LOADING) {
+                        return ShimmerWidget();
+                      } else if (cryptoDataProvider.state.status case Status.COMPLETE) {
+                        List<CryptoData>? model = cryptoDataProvider.dataFuture.data!.cryptoCurrencyList;
 
 
-                          return ListView.separated(
-                            physics: ClampingScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                var number = index +1;
-                                var tokenId = model[index].id;
-                                MaterialColor filterColor = DecimalRounder.setColorFilter(model[index].quotes![0].percentChange24h);
-                                var finalPrice = DecimalRounder.removePriceDecimal(model[index].quotes![0].price);
+                        return ListView.separated(
 
-                                var percentChange = DecimalRounder.removePercentDecimal(model[index].quotes![0].percentChange24h);
-                                Color percentColor = DecimalRounder.setPercentChangeColor(model[index].quotes![0].percentChange24h);
-                                Icon percentIcon = DecimalRounder.setPercentChangeIcon(model[index].quotes![0].percentChange24h);
+                          physics: BouncingScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              var number = index +1;
+                              var tokenId = model[index].id;
+                              MaterialColor filterColor = DecimalRounder.setColorFilter(model[index].quotes![0].percentChange24h);
+                              var finalPrice = DecimalRounder.removePriceDecimal(model[index].quotes![0].price);
 
-                                return SizedBox(
-                                  height: height*0.075,
-                                  child: Row(
+                              var percentChange = DecimalRounder.removePercentDecimal(model[index].quotes![0].percentChange24h);
+                              Color percentColor = DecimalRounder.setPercentChangeColor(model[index].quotes![0].percentChange24h);
+                              Icon percentIcon = DecimalRounder.setPercentChangeIcon(model[index].quotes![0].percentChange24h);
 
-                                    children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 10),
-                                          child: Text(number.toString(),style: textTheme.bodySmall,),
-                                        ),
-                                       Padding(
-                                         padding: const EdgeInsets.only(left: 10,right: 15),
-                                         child: CachedNetworkImage(
-                                           fadeInDuration: Duration(milliseconds: 500) ,
-                                           height: 32,
-                                           width: 32,
-                                           imageUrl: 'https://s2.coinmarketcap.com/static/img/coins/32x32/$tokenId.png',
-                                           placeholder: (context, url) => CircularProgressIndicator(),
-                                           errorWidget: (context, url, error) => Icon(Icons.error),
+                              return SizedBox(
+                                height: height*0.075,
+                                child: Row(
 
-                                         ),
+                                  children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 10),
+                                        child: Text(number.toString(),style: textTheme.bodySmall,),
+                                      ),
+                                     Padding(
+                                       padding: const EdgeInsets.only(left: 10,right: 15),
+                                       child: CachedNetworkImage(
+                                         fadeInDuration: Duration(milliseconds: 500) ,
+                                         height: 32,
+                                         width: 32,
+                                         imageUrl: 'https://s2.coinmarketcap.com/static/img/coins/32x32/$tokenId.png',
+                                         placeholder: (context, url) => CircularProgressIndicator(),
+                                         errorWidget: (context, url, error) => Icon(Icons.error),
 
                                        ),
-                                      Flexible(
-                                          fit: FlexFit.tight,
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(model[index].name!,style: textTheme.bodySmall,),
-                                              Text(model[index].symbol!,style: textTheme.labelSmall,)
-                                            ],
-                                          ))
-                                      ,
-                                      Flexible(
+
+                                     ),
+                                    Flexible(
                                         fit: FlexFit.tight,
-                                          child: ColorFiltered(
-                                            colorFilter: ColorFilter.mode(filterColor, BlendMode.srcATop),
-                                              child: SvgPicture.network("https://s3.coinmarketcap.com/generated/sparklines/web/1d/2781/$tokenId.svg")
-                                          )
-                                      ),
-                                      Expanded(child: 
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 10),
                                         child: Column(
                                           mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text("\$$finalPrice",style: textTheme.bodySmall,),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.end,
-                                              children: [
-                                                percentIcon,
-                                                Text("$percentChange%",style: GoogleFonts.ubuntu(color: percentColor,fontSize: 13),)
-                                              ],
-                                            )
+                                            SizedBox(
+                                              width: 100,
+                                                child: Text(model[index].name!,style: textTheme.bodySmall,)),
+                                            Text(model[index].symbol!,style: textTheme.labelSmall,)
                                           ],
-                                        ),
-                                      ))
+                                        ))
+                                    ,
+                                    Flexible(
+                                      fit: FlexFit.tight,
+                                        child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(filterColor, BlendMode.srcATop),
+                                            child: SvgPicture.network("https://s3.coinmarketcap.com/generated/sparklines/web/1d/2781/$tokenId.svg",width: 100,)
+                                        )
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 10),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          Text("\$$finalPrice",style: textTheme.bodySmall,),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              percentIcon,
+                                              Text("$percentChange%",style: GoogleFonts.ubuntu(color: percentColor,fontSize: 13),)
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    )
 
-                                    ],
-                                  ),
-                                );
-                              },
-                              separatorBuilder: (context, index) {
-                                return Divider();
-                              },
-                              itemCount: model!.length);
-                        case Status.ERROR:
-                          return Text(cryptoDataProvider.state.message);
-
+                                  ],
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return Divider();
+                            },
+                            itemCount: model!.length);
+                      } else  {
+                        return Text(cryptoDataProvider.state.message);
                       }
                     },
+
                   ),
                 ),
               ],

@@ -26,8 +26,11 @@ class $AssetsImagesGen {
   /// File path: assets/images/a4.png
   AssetGenImage get a4 => const AssetGenImage('assets/images/a4.png');
 
+  /// File path: assets/images/waveloop.json
+  String get waveloop => 'assets/images/waveloop.json';
+
   /// List of all assets
-  List<AssetGenImage> get values => [a1, a2, a3, a4];
+  List<dynamic> get values => [a1, a2, a3, a4, waveloop];
 }
 
 class Assets {

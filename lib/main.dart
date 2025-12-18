@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:training_a/providers/crypto_data_provider.dart';
+import 'package:training_a/providers/market_view_provider.dart';
+import 'package:training_a/providers/register_provider.dart';
 import 'package:training_a/providers/theme_provider.dart';
 import 'package:training_a/ui/ui_helper/main_wrapper.dart';
 import 'components/const/app_theme.dart';
@@ -19,6 +21,8 @@ void main() {
     MultiProvider(providers: [
       ChangeNotifierProvider(create: (context) => ThemeProvider()),
       ChangeNotifierProvider(create: (context) =>CryptoDataProvider()),
+      ChangeNotifierProvider(create: (context) => MarketViewProvider(),),
+      ChangeNotifierProvider(create: (context) => RegisterProvider(),)
 
     ],
       child: MyApp(),
@@ -57,9 +61,22 @@ class _MyAppState extends State<MyApp> {
 
       debugShowCheckedModeBanner: false,
       home: Directionality(
-        textDirection: TextDirection.ltr,
-        child: MainWrapper()
+          textDirection: TextDirection.ltr,
+          child:MainWrapper()),
+      // home: FutureBuilder<SharedPreferences>(
+      //     future: SharedPreferences.getInstance(),
+      //     builder: (context, snapshot) {
+      //     if(snapshot.hasData){
+      //       SharedPreferences sharedPreferences = snapshot.data!;
+      //       var loggedInState = sharedPreferences.getBool("loggedIn")??false;
+      //       if(loggedInState){
+      //         return MainWrapper();
+      //       }else{
+      //         return SignUpScreen();
+      //       }
+      //     }return Center(child: CircularProgressIndicator(),);
+      //     },)
       ),
-    ));
+    );
   }
 }

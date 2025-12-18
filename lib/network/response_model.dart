@@ -14,4 +14,4 @@ ResponseModel.error(this.message): status= Status.ERROR;
    return  "Status: $status,\n Message: $message\n Data: $data";
    }
 }
-enum Status {LOADING,COMPLETE,ERROR}
+enum Status {LOADING,COMPLETE,ERROR, Loading}
